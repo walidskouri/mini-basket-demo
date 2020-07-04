@@ -1,0 +1,11 @@
+server:
+  port: 8090
+
+spring:
+  data:
+    mongodb:
+      database: demo
+      password: walid
+      username: walid
+      host: localhost
+      port: 27017
