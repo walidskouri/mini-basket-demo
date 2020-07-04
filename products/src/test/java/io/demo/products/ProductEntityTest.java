@@ -3,6 +3,8 @@ package io.demo.products;
 import com.mongodb.client.result.DeleteResult;
 import io.demo.products.models.Product;
 import org.assertj.core.api.Assertions;
+import org.joda.money.BigMoney;
+import org.joda.money.CurrencyUnit;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
@@ -19,11 +21,13 @@ public class ProductEntityTest {
 
     @Test
     public void shouldSaveAndGetTheRemove() {
-        Product product = new Product(null, "Savane");
+        Product product = new Product(null, "Savane", "123465897", BigMoney.ofScale(CurrencyUnit.EUR, 12, 2));
         Mono<Product> save = mongoTemplate.save( product);
         StepVerifier
                 .create(save)
-                .expectNextMatches(createdProduct -> createdProduct.getName().equalsIgnoreCase("Savane") && createdProduct.getId() != null)
+                .expectNextMatches(createdProduct -> createdProduct.getName().equalsIgnoreCase("Savane")
+                        && createdProduct.getProductCode().equalsIgnoreCase("123465897")
+                        && createdProduct.getId() != null)
                 .verifyComplete();
         DeleteResult remove = mongoTemplate.remove(product).block();
         Assertions.assertThat(remove.getDeletedCount()).isEqualTo(1);

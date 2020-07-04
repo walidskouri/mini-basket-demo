@@ -15,7 +15,9 @@ public class ProductHttpConfig {
     @Bean
     RouterFunction<ServerResponse> responseRouterFunction(ProductRepository productRepository) {
         return route()
-                .GET("/products", serverRequest -> ServerResponse.ok().body(productRepository.findAll(), Product.class))
+                .GET("/products", serverRequest -> ServerResponse
+                        .ok()
+                        .body(productRepository.findAll(), Product.class))
                 .build();
     }
 

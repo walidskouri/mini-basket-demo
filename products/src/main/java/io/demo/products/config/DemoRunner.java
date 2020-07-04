@@ -13,6 +13,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.stream.BaseStream;
 
+import static io.demo.products.utils.MoneyUtils.convertToMoney;
+
 @Component
 @Profile(value = "!test")
 @RequiredArgsConstructor
@@ -25,15 +27,16 @@ public class DemoRunner implements CommandLineRunner {
     public void run(String... args) throws Exception {
         Flux<String> stringFlux = fromPath(Path.of(resourceLoader.getResource("classpath:data.csv").getURI()));
         repo.deleteAll()
-                .thenMany(stringFlux.map(line -> convertToProduct(line)).flatMap(p -> repo.save(p)))
+                .thenMany(stringFlux.map(line -> lineToProduct(line)).flatMap(p -> repo.save(p)))
                 .blockFirst();
     }
 
-    private Product convertToProduct(String line) {
+    private Product lineToProduct(String line) {
         String[] split = line.split(";");
-        return new Product(null, split[1]);
-
+        String price = split[2];
+        return new Product(null, split[1], split[0], convertToMoney(price));
     }
+
 
     private static Flux<String> fromPath(Path path) {
         return Flux.using(() -> Files.lines(path),
