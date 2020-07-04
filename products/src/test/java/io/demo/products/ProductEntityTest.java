@@ -1,9 +1,9 @@
 package io.demo.products;
 
 import com.mongodb.client.result.DeleteResult;
+import io.demo.products.models.Price;
 import io.demo.products.models.Product;
 import org.assertj.core.api.Assertions;
-import org.joda.money.BigMoney;
 import org.joda.money.CurrencyUnit;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,8 +21,14 @@ public class ProductEntityTest {
 
     @Test
     public void shouldSaveAndGetTheRemove() {
-        Product product = new Product(null, "Savane", "123465897", BigMoney.ofScale(CurrencyUnit.EUR, 12, 2));
-        Mono<Product> save = mongoTemplate.save( product);
+        Product product = new Product(null, "Savane",
+                "123465897",
+                Price
+                        .builder()
+                        .currency(CurrencyUnit.EUR.getCode()).amount(12)
+                        .scale(2)
+                        .build());
+        Mono<Product> save = mongoTemplate.save(product);
         StepVerifier
                 .create(save)
                 .expectNextMatches(createdProduct -> createdProduct.getName().equalsIgnoreCase("Savane")

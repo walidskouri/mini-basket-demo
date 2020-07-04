@@ -1,9 +1,9 @@
 package io.demo.products;
 
 import io.demo.products.config.ProductHttpConfig;
+import io.demo.products.models.Price;
 import io.demo.products.models.Product;
 import io.demo.products.repository.ProductRepository;
-import org.joda.money.BigMoney;
 import org.joda.money.CurrencyUnit;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,8 +30,8 @@ public class ProductHttpTest {
         // Mock database Layer
         when(this.repository.findAll())
                 .thenReturn(Flux
-                        .just(new Product("1", "Savane", "1234564", BigMoney.ofScale(CurrencyUnit.EUR, 120, 2)),
-                                new Product("2", "Danette", "1144888", BigMoney.ofScale(CurrencyUnit.EUR, 450, 2)))
+                        .just(new Product("1", "Savane", "1234564", Price.builder().currency(CurrencyUnit.EUR.getCode()).amount(120).scale(2).build()),
+                                new Product("2", "Danette", "1144888", Price.builder().currency(CurrencyUnit.EUR.getCode()).amount(450).scale(2).build()))
                 );
 
 

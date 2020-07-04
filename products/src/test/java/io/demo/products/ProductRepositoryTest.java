@@ -1,5 +1,6 @@
 package io.demo.products;
 
+import io.demo.products.models.Price;
 import io.demo.products.models.Product;
 import io.demo.products.repository.ProductRepository;
 import org.joda.money.BigMoney;
@@ -27,7 +28,7 @@ public class ProductRepositoryTest {
                                 .map(name -> new Product(null,
                                         name,
                                         "123454" + name,
-                                        BigMoney.ofScale(CurrencyUnit.EUR, 200, 2)))
+                                        Price.builder().amount(200).currency("EUR").scale(2).build()))
                                 .flatMap(p -> this.repository.save(p))
                 ).thenMany(this.repository.findByName("C"));
         StepVerifier
