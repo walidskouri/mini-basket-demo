@@ -18,10 +18,6 @@ spring:
     name: Basket
 
 management:
-  health:
-    status:
-      http-mapping:
-        DOWN: 200
   endpoint:
     health:
       show-details: "always"
@@ -38,3 +34,8 @@ server:
   port: 9090
   servlet:
     context-path: /
+
+
+
+products:
+  base-uri: http://localhost:8090
