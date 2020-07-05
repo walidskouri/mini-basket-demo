@@ -1,0 +1,40 @@
+project:
+  artifactId: demo-basket-microservice
+
+# For Spring Actuator
+info:
+  artifact: ${project.artifactId}
+  name: ${project.name}
+  description: ${project.description}
+  version: ${project.version}
+  commitid: ${project.commitid}
+  version-contract: V1
+  version-contract-api: 0.0.1
+
+spring:
+  main:
+    allow-bean-definition-overriding: true
+  application:
+    name: Basket
+
+management:
+  health:
+    status:
+      http-mapping:
+        DOWN: 200
+  endpoint:
+    health:
+      show-details: "always"
+  endpoints:
+    enabled-by-default: true
+    web:
+      exposure:
+        include: health,info,env,prometheus
+      base-path: /
+      path-mapping:
+        prometheus: prometheus
+
+server:
+  port: 9090
+  servlet:
+    context-path: /
