@@ -1,7 +1,7 @@
 package io.demo.products.config;
 
 import io.demo.products.models.Product;
-import io.demo.products.repository.ProductRepository;
+import io.demo.products.service.ProductService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.reactive.function.server.RouterFunction;
@@ -13,11 +13,11 @@ import static org.springframework.web.reactive.function.server.RouterFunctions.r
 public class ProductHttpConfig {
 
     @Bean
-    RouterFunction<ServerResponse> responseRouterFunction(ProductRepository productRepository) {
+    RouterFunction<ServerResponse> responseRouterFunction(ProductService service) {
         return route()
                 .GET("/products", serverRequest -> ServerResponse
                         .ok()
-                        .body(productRepository.findAll(), Product.class))
+                        .body(service.all(), Product.class))
                 .build();
     }
 

@@ -1,7 +1,6 @@
 package io.demo.products.utils;
 
 import io.demo.products.models.Price;
-import org.joda.money.BigMoney;
 import org.joda.money.CurrencyUnit;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -15,12 +14,11 @@ class MoneyUtilsTest {
 
     private static Stream<Arguments> provideAmountToTest() {
         return Stream.of(
-                Arguments.of("1500,12€", Price.builder().currency(CurrencyUnit.EUR.getCode()).amount(150012).scale(2).build()),
-                Arguments.of("0,12€", Price.builder().currency(CurrencyUnit.EUR.getCode()).amount(12).scale(2).build()),
-                Arguments.of("5,12€", Price.builder().currency(CurrencyUnit.EUR.getCode()).amount(512).scale(2).build()),
-                Arguments.of("5€", Price.builder().currency(CurrencyUnit.EUR.getCode()).amount(5).scale(0).build()),
-                Arguments.of("5,0€", Price.builder().currency(CurrencyUnit.EUR.getCode()).amount(50).scale(1).build()),
-                Arguments.of("5,0$", Price.builder().currency(CurrencyUnit.EUR.getCode()).amount(0).scale(0).build()),
+                Arguments.of("1500.12", Price.builder().currency(CurrencyUnit.EUR.getCode()).amount(150012).scale(2).build()),
+                Arguments.of("0.12", Price.builder().currency(CurrencyUnit.EUR.getCode()).amount(12).scale(2).build()),
+                Arguments.of("5.12", Price.builder().currency(CurrencyUnit.EUR.getCode()).amount(512).scale(2).build()),
+                Arguments.of("5", Price.builder().currency(CurrencyUnit.EUR.getCode()).amount(5).scale(0).build()),
+                Arguments.of("5.0", Price.builder().currency(CurrencyUnit.EUR.getCode()).amount(50).scale(1).build()),
                 Arguments.of(null, Price.builder().currency(CurrencyUnit.EUR.getCode()).amount(0).scale(0).build())
         );
     }
