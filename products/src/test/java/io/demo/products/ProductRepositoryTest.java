@@ -3,8 +3,6 @@ package io.demo.products;
 import io.demo.products.models.Price;
 import io.demo.products.models.Product;
 import io.demo.products.repository.ProductRepository;
-import org.joda.money.BigMoney;
-import org.joda.money.CurrencyUnit;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
@@ -30,7 +28,7 @@ public class ProductRepositoryTest {
                                         "123454" + name,
                                         Price.builder().amount(200).currency("EUR").scale(2).build()))
                                 .flatMap(p -> this.repository.save(p))
-                ).thenMany(this.repository.findByName("C"));
+                ).thenMany(this.repository.findByNameRegexp("C"));
         StepVerifier
                 .create(productFlux)
                 .expectNextCount(2)

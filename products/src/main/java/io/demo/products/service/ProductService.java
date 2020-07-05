@@ -9,11 +9,16 @@ import reactor.core.publisher.Flux;
 @Service
 @RequiredArgsConstructor
 public class ProductService {
-p
+
     private final ProductRepository repository;
 
     public Flux<Product> all() {
         return repository.findAll();
     }
+
+    public Flux<Product> byNameLike(String nameQuery) {
+        return repository.findByNameRegexp(nameQuery);
+    }
+
 
 }
