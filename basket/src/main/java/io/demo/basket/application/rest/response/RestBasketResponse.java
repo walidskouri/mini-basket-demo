@@ -18,7 +18,7 @@ public class RestBasketResponse {
 
     @ApiModelProperty(value = "Offer price")
     @JsonProperty("total_amount")
-    private RestMoney totalAmount;
+    private RestMoney totalOffersMonetaryAmount;
 
     @ApiModelProperty(value = "The basket creation date", example = "2020-07-05T18:00:00Z")
     @JsonProperty("creation_date")
@@ -27,4 +27,8 @@ public class RestBasketResponse {
     @ApiModelProperty(value = "The basket last modification date", example = "2020-07-05T18:00:00Z")
     @JsonProperty("last_modified")
     private OffsetDateTime lastModified;
+
+
+
+
 }

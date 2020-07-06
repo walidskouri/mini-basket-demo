@@ -1,5 +1,6 @@
 package io.demo.basket.domain.model.basket.offer;
 
+import io.demo.basket.domain.service.MoneyUtil;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -26,5 +27,12 @@ public class Offer implements Serializable {
 
     private BigMoney unitPrice;
 
+    public BigMoney getLinePrice(Integer quantity) {
+        BigMoney computedLinePrice = MoneyUtil.unscaledToMoney(0);
+        if (unitPrice != null && quantity >= 0 && unitPrice.isPositiveOrZero()) {
+            computedLinePrice = unitPrice.multipliedBy(quantity);
+        }
+        return computedLinePrice;
+    }
 
 }

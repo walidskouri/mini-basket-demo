@@ -5,8 +5,6 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
-import java.time.OffsetDateTime;
-
 @ApiModel(value = "Offer")
 @Data
 public class RestOffer {
@@ -23,11 +21,13 @@ public class RestOffer {
     @JsonProperty("product_code")
     private String productCode;
 
-    @ApiModelProperty(value = "Offer price")
+    @ApiModelProperty(value = "Offer unit price")
     @JsonProperty("unit_price")
     private RestMoney unitPrice;
 
-
+    @ApiModelProperty(value = "Offer total price")
+    @JsonProperty("total_price")
+    private RestMoney linePrice;
 
 
 }

@@ -32,8 +32,7 @@ public class Basket implements Serializable {
         return this.getOffers()
                 .stream()
                 .filter(offer -> validOffer().test(offer))
-                .filter(offer -> offer != null && offer.getUnitPrice() != null && offer.getQuantity() != null)
-                .map(Offer::getUnitPrice)
+                .map(offer -> offer.getLinePrice(offer.getQuantity()))
                 .reduce(BigMoney::plus)
                 .orElse(MoneyUtil.unscaledToMoney(0));
     }

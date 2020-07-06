@@ -9,13 +9,18 @@ import org.joda.money.BigMoney;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
+import java.util.List;
+
 @Mapper(componentModel = "spring")
 public abstract class ServiceToRestBasketMapper {
 
     public abstract RestBasketResponse toTeRestBasketResponse(Basket basket);
 
-    @Mapping(expression = "java(toRestMoney(offer.getUnitPrice()))", target = "unitPrice")
+    @Mapping(expression = "java(toRestMoney(offer.getLinePrice(offer.getQuantity())))", target = "linePrice")
+    @Mapping(source = "id", target = "productCode")
     protected abstract RestOffer offerToRestOffer(Offer offer);
+
+    public abstract List<RestOffer> toOffers(List<Offer> offers);
 
     public RestMoney toRestMoney(BigMoney money) {
         if (money != null) {
