@@ -14,6 +14,7 @@ import java.util.List;
 @Mapper(componentModel = "spring")
 public abstract class ServiceToRestBasketMapper {
 
+
     public abstract RestBasketResponse toTeRestBasketResponse(Basket basket);
 
     @Mapping(expression = "java(toRestMoney(offer.getLinePrice(offer.getQuantity())))", target = "linePrice")

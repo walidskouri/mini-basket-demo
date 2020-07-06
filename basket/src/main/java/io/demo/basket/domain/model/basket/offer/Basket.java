@@ -12,6 +12,8 @@ import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.function.Predicate;
 
+import static org.apache.commons.collections4.CollectionUtils.isEmpty;
+
 @Data
 @Builder(toBuilder = true)
 @NoArgsConstructor
@@ -35,6 +37,10 @@ public class Basket implements Serializable {
                 .map(offer -> offer.getLinePrice(offer.getQuantity()))
                 .reduce(BigMoney::plus)
                 .orElse(MoneyUtil.unscaledToMoney(0));
+    }
+
+    public Integer getTotalOffersCount() {
+        return isEmpty(getOffers()) ? 0 : getOffers().size();
     }
 
     public static Predicate<Offer> validOffer() {

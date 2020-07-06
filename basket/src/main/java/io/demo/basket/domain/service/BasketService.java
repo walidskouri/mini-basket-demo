@@ -9,7 +9,7 @@ import org.joda.money.BigMoney;
 import org.springframework.stereotype.Service;
 
 import java.time.OffsetDateTime;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.UUID;
@@ -30,10 +30,11 @@ public class BasketService implements BasketServicePort {
     }
 
     private List<Offer> createDummyOffers() {
-        return Arrays.asList(dummyOffer("Offer1"),
-                dummyOffer("Offer2"),
-                dummyOffer("Offer3"),
-                dummyOffer("Offer4"));
+        List<Offer> offers = new ArrayList<>();
+        for (int i = 1; i < new Random().nextInt(50) + 1; i++) {
+            offers.add(dummyOffer("Offer" + i));
+        }
+        return offers;
     }
 
     private Offer dummyOffer(String name) {
@@ -48,6 +49,6 @@ public class BasketService implements BasketServicePort {
 
     private BigMoney createDummyPrice() {
         return MoneyUtil
-                .unscaledToMoney(new Random().nextInt(100) + 1);
+                .unscaledToMoney(new Random().nextInt(300) + 100);
     }
 }

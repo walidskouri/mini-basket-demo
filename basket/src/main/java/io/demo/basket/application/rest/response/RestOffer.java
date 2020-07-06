@@ -30,4 +30,5 @@ public class RestOffer {
     private RestMoney linePrice;
 
 
+
 }

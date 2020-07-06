@@ -12,13 +12,17 @@ import java.util.List;
 @Data
 public class RestBasketResponse {
 
-    @ApiModelProperty(value = "The list of offers")
-    @JsonProperty("offers")
-    private List<RestOffer> offers;
+    @ApiModelProperty(value = "Total offers count")
+    @JsonProperty("total_offers_count")
+    private Integer totalOffersCount;
 
     @ApiModelProperty(value = "Offer price")
     @JsonProperty("total_amount")
     private RestMoney totalOffersMonetaryAmount;
+
+    @ApiModelProperty(value = "The list of offers")
+    @JsonProperty("offers")
+    private List<RestOffer> offers;
 
     @ApiModelProperty(value = "The basket creation date", example = "2020-07-05T18:00:00Z")
     @JsonProperty("creation_date")
@@ -27,6 +31,9 @@ public class RestBasketResponse {
     @ApiModelProperty(value = "The basket last modification date", example = "2020-07-05T18:00:00Z")
     @JsonProperty("last_modified")
     private OffsetDateTime lastModified;
+
+
+
 
 
 
