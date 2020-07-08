@@ -33,7 +33,6 @@ public class Basket implements Serializable {
     private List<Offer> offers;
 
 
-
     public BigMoney getTotalOffersMonetaryAmount() {
         return this.getOffers()
                 .stream()
@@ -52,7 +51,7 @@ public class Basket implements Serializable {
     }
 
     public Integer getTotalOffersCount() {
-        return isEmpty(getOffers()) ? 0 : getOffers().size();
+        return Math.toIntExact(isEmpty(getOffers()) ? 0 : getOffers().stream().filter(Offer::isAvailable).count());
     }
 
     public static Predicate<Offer> validOffer() {

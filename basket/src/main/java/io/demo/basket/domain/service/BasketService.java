@@ -8,6 +8,7 @@ import io.demo.basket.domain.model.basket.offer.Product;
 import io.demo.basket.domain.spi.ProductPort;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.joda.money.BigMoney;
 import org.springframework.stereotype.Service;
 
@@ -45,10 +46,32 @@ public class BasketService implements BasketServicePort {
     @Override
     public Basket addProducts(String userLogin, List<String> productCodes) {
         Basket dummyBasket = getBasket(userLogin);
-        List<Offer> newOffers = toOffers(productPort.searchProducts(productCodes));
-        dummyBasket.getOffers().addAll(newOffers);
+        List<Offer> newOffers = toOffers(productPort.searchProducts(concatAllOfferCodesToQuery(dummyBasket.getOffers(), productCodes)));
+        List<Offer> consolidated = consolidateNotFoundOffers(newOffers, productCodes);
+        dummyBasket.getOffers().addAll(consolidated);
         dummyBasket.setOffers(completeOffers(newOffers, dummyBasket.getOffers()));
         return dummyBasket;
+    }
+
+    private List<String> concatAllOfferCodesToQuery(List<Offer> offers, List<String> productCodes) {
+        List<String> alreadyInBasketCodes = offers.stream().map(Offer::getId).filter(code -> !productCodes.contains(code)).collect(toList());
+        if (CollectionUtils.isNotEmpty(alreadyInBasketCodes)) {
+            return Stream.concat(productCodes.stream(), alreadyInBasketCodes.stream()).collect(toList());
+        }
+        return productCodes;
+    }
+
+    private List<Offer> consolidateNotFoundOffers(List<Offer> newOffers, List<String> productCodes) {
+        List<Offer> notReturnedFromProduct = buildNotReturnedOffers(newOffers.stream().map(Offer::getId).collect(Collectors.toList()), productCodes);
+        return Stream.concat(newOffers.stream(), notReturnedFromProduct.stream()).collect(Collectors.toList());
+    }
+
+    private List<Offer> buildNotReturnedOffers(List<String> returnedOffers, List<String> productCodes) {
+        return productCodes.stream().filter(requestedCode -> !returnedOffers.contains(requestedCode)).map(this::toNotFound).collect(Collectors.toList());
+    }
+
+    private Offer toNotFound(String code) {
+        return Offer.builder().id(code).available(false).quantity(0).build();
     }
 
     public List<Offer> completeOffers(List<Offer> offersToAdd, List<Offer> offersInBasket) {
@@ -97,8 +120,8 @@ public class BasketService implements BasketServicePort {
 
     private List<Offer> createDummyOffers() {
         List<Offer> offers = new ArrayList<>();
-        for (int i = 1; i < new Random().nextInt(50) + 1; i++) {
-            offers.add(dummyOffer("Offer" + i));
+        for (int i = 0; i < new Random().nextInt(2); i++) {
+            offers.add(dummyOffer("Offer" + i + 1));
         }
         return offers;
     }

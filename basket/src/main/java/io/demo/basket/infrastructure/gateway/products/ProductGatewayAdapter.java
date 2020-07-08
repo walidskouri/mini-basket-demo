@@ -49,6 +49,9 @@ public class ProductGatewayAdapter implements ProductPort {
         try {
             ResponseEntity<GatewayProduct[]> listResponseEntity = productRestTemplate
                     .postForEntity(uriComponents.toUri(), request, GatewayProduct[].class);
+
+
+
             return productGateWayToServiceMapper.toProducts(Stream.of(listResponseEntity.getBody())
                     .filter(Objects::nonNull)
                     .collect(Collectors.toList()));
