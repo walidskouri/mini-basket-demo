@@ -35,7 +35,11 @@ server:
   servlet:
     context-path: /
 
-
+opentracing:
+  jaeger:
+    udp-sender:
+      host: localhost
+      port: 6831
 
 products:
   base-uri: http://localhost:8090

@@ -2,6 +2,10 @@ server:
   port: 8090
 
 spring:
+  main:
+    allow-bean-definition-overriding: true
+  application:
+    name: Product-MS
   data:
     mongodb:
       database: demo
@@ -9,3 +13,11 @@ spring:
       username: walid
       host: localhost
       port: 27017
+
+opentracing:
+  jaeger:
+    udp-sender:
+      host: localhost
+      port: 6831
+
+

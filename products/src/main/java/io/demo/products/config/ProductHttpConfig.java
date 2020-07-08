@@ -3,6 +3,7 @@ package io.demo.products.config;
 import io.demo.products.models.Product;
 import io.demo.products.models.request.GetProductsDetailsRequest;
 import io.demo.products.service.ProductService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
@@ -13,6 +14,7 @@ import reactor.core.publisher.Flux;
 import static org.springframework.web.reactive.function.server.RouterFunctions.route;
 
 @Configuration
+@Slf4j
 public class ProductHttpConfig {
 
     @Bean
@@ -37,7 +39,7 @@ public class ProductHttpConfig {
     }
 
     private Flux<String> fromRequest(GetProductsDetailsRequest getProductsDetailsRequest) {
-        System.out.println("Request : " + getProductsDetailsRequest);
+        log.info("Request : " + getProductsDetailsRequest);
         return Flux.fromStream(getProductsDetailsRequest.getProductCodes().stream());
     }
 

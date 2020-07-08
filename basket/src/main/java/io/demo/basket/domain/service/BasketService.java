@@ -6,6 +6,8 @@ import io.demo.basket.domain.model.basket.Basket;
 import io.demo.basket.domain.model.basket.offer.Offer;
 import io.demo.basket.domain.model.basket.offer.Product;
 import io.demo.basket.domain.spi.ProductPort;
+import io.opentracing.Span;
+import io.opentracing.Tracer;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
@@ -32,9 +34,11 @@ import static org.apache.commons.collections4.CollectionUtils.isEmpty;
 public class BasketService implements BasketServicePort {
 
     private final ProductPort productPort;
+    private final Tracer tracer;
 
     @Override
     public Basket getBasket(String userLogin) {
+        tracer.activeSpan().log("Getting Basket for user " + userLogin);
         Basket dummyBasket = new Basket();
         dummyBasket.setCreationDate(OffsetDateTime.now());
         dummyBasket.setLastModified(OffsetDateTime.now());
@@ -45,11 +49,18 @@ public class BasketService implements BasketServicePort {
 
     @Override
     public Basket addProducts(String userLogin, List<String> productCodes) {
+        Span serverSpan = tracer.activeSpan();
+        Span span = tracer.buildSpan("addProductsSpan")
+                .asChildOf(serverSpan.context())
+                .start();
+        tracer.activeSpan().log("Adding offer to the Basket of " + userLogin + " : " + productCodes);
         Basket dummyBasket = getBasket(userLogin);
         List<Offer> newOffers = toOffers(productPort.searchProducts(concatAllOfferCodesToQuery(dummyBasket.getOffers(), productCodes)));
         List<Offer> consolidated = consolidateNotFoundOffers(newOffers, productCodes);
         dummyBasket.getOffers().addAll(consolidated);
         dummyBasket.setOffers(completeOffers(newOffers, dummyBasket.getOffers()));
+        tracer.activeSpan().log("Returning new Basket of " + userLogin);
+        span.finish();
         return dummyBasket;
     }
 
