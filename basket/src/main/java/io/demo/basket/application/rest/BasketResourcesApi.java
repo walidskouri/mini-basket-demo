@@ -1,6 +1,7 @@
 package io.demo.basket.application.rest;
 
 import io.demo.basket.application.rest.RestErrorException.RestErrorResponse;
+import io.demo.basket.application.rest.request.AddProductRequest;
 import io.demo.basket.application.rest.response.RestBasketResponse;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -31,4 +32,11 @@ public interface BasketResourcesApi {
     @ApiImplicitParam(name = USER_LOGIN_LABEL, value = "Connected User login", paramType = "header", required = false)
     ResponseEntity<RestBasketResponse> getBasket(@ApiParam(hidden = true) String customerLogin);
 
+    @ApiOperation(value = "Add products",
+            tags = "Products",
+            notes = "# Add one or many product to users basket")
+    @ApiImplicitParam(name = USER_LOGIN_LABEL, value = "Connected User login", paramType = "header", required = false)
+    ResponseEntity<RestBasketResponse> addProductsInBasket(
+            AddProductRequest addProductRequest,
+            @ApiParam(hidden = true) String customerLogin);
 }

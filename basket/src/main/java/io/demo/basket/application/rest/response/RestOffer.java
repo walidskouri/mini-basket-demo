@@ -29,6 +29,10 @@ public class RestOffer {
     @JsonProperty("total_price")
     private RestMoney linePrice;
 
+    @ApiModelProperty(value = "Is offer available")
+    @JsonProperty("available")
+    private boolean available;
+
 
 
 }

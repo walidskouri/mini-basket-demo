@@ -20,5 +20,9 @@ public class ProductService {
         return repository.findByNameRegexp(nameQuery);
     }
 
+    public Flux<Product> getProductsByCodes(Flux<String> productCodes) {
+        return productCodes.flatMap(repository::findByProductCode);
+    }
+
 
 }

@@ -2,8 +2,11 @@ package io.demo.basket.domain.service;
 
 
 import io.demo.basket.domain.api.BasketServicePort;
-import io.demo.basket.domain.model.basket.offer.Basket;
+import io.demo.basket.domain.model.basket.Basket;
 import io.demo.basket.domain.model.basket.offer.Offer;
+import io.demo.basket.domain.model.basket.offer.Product;
+import io.demo.basket.domain.spi.ProductPort;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.joda.money.BigMoney;
 import org.springframework.stereotype.Service;
@@ -12,11 +15,22 @@ import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import static java.util.Collections.emptyList;
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toSet;
+import static org.apache.commons.collections4.CollectionUtils.isEmpty;
 
 @Service
 @Slf4j
+@RequiredArgsConstructor
 public class BasketService implements BasketServicePort {
+
+    private final ProductPort productPort;
 
     @Override
     public Basket getBasket(String userLogin) {
@@ -25,8 +39,60 @@ public class BasketService implements BasketServicePort {
         dummyBasket.setLastModified(OffsetDateTime.now());
         dummyBasket.setCustomerLogin(userLogin);
         dummyBasket.setOffers(createDummyOffers());
-        dummyBasket.setOffersCount(dummyBasket.getOffers().size());
         return dummyBasket;
+    }
+
+    @Override
+    public Basket addProducts(String userLogin, List<String> productCodes) {
+        Basket dummyBasket = getBasket(userLogin);
+        List<Offer> newOffers = toOffers(productPort.searchProducts(productCodes));
+        dummyBasket.getOffers().addAll(newOffers);
+        dummyBasket.setOffers(completeOffers(newOffers, dummyBasket.getOffers()));
+        return dummyBasket;
+    }
+
+    public List<Offer> completeOffers(List<Offer> offersToAdd, List<Offer> offersInBasket) {
+        List<Offer> allOffers = completeOrReplaceExistingOffersWithOffersToAdd(offersInBasket, offersToAdd);
+        if (isEmpty(allOffers)) {
+            return emptyList();
+        }
+        return allOffers
+                .stream()
+                .map(Offer.completeOfferWithProductInfo(offersToAdd))
+                .collect(Collectors.toList());
+    }
+
+
+    private List<Offer> completeOrReplaceExistingOffersWithOffersToAdd(List<Offer> offersToAdd, List<Offer> offersInBasket) {
+        Set<String> offersToAddIds = offersToAdd.stream()
+                .map(Offer::getId)
+                .collect(toSet());
+
+        List<Offer> existingOffersWithoutOnesToAdd = offersInBasket.stream()
+                .filter(offer -> !offersToAddIds.contains(offer.getId()))
+                .collect(toList());
+
+        return Stream.concat(existingOffersWithoutOnesToAdd.stream(), offersToAdd.stream()).collect(toList());
+
+//        return offersInBasket
+//                .stream()
+//                .map(offer -> Offer.completeOfferWithProductInfo(offersToAdd).apply(offer))
+//                .collect(Collectors.toList());
+    }
+
+    private List<Offer> toOffers(List<Product> foundProducts) {
+        return foundProducts.stream().map(this::mapProduct).collect(Collectors.toList());
+    }
+
+    private Offer mapProduct(Product product) {
+        return Offer
+                .builder()
+                .unitPrice(product.getUnitPrice())
+                .quantity(new Random().nextInt(10) + 1)
+                .name(product.getName())
+                .available(true)
+                .id(product.getProductCode())
+                .build();
     }
 
     private List<Offer> createDummyOffers() {

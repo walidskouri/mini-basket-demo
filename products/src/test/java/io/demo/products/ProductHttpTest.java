@@ -21,11 +21,13 @@ public class ProductHttpTest {
     @MockBean
     private ProductService service;
 
+
     @Autowired
     private WebTestClient client;
 
     @Test
     public void getAllProducts() {
+
         // Mock Service Layer
         when(this.service.all())
                 .thenReturn(Flux
@@ -61,5 +63,6 @@ public class ProductHttpTest {
                 .jsonPath("@.[0].name").isEqualTo("Graham Cracker Mix")
                 .jsonPath("@.[1].name").isEqualTo("Ham Black Forest");
     }
+
 
 }

@@ -3,7 +3,7 @@ package io.demo.basket.application.mapper;
 import io.demo.basket.application.rest.response.RestBasketResponse;
 import io.demo.basket.application.rest.response.RestMoney;
 import io.demo.basket.application.rest.response.RestOffer;
-import io.demo.basket.domain.model.basket.offer.Basket;
+import io.demo.basket.domain.model.basket.Basket;
 import io.demo.basket.domain.model.basket.offer.Offer;
 import org.joda.money.BigMoney;
 import org.mapstruct.Mapper;

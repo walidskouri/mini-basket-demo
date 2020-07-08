@@ -1,0 +1,18 @@
+###
+GET http://localhost:8090/products
+
+###
+GET http://localhost:8090/products/Muffin
+
+###
+POST http://localhost:8090/products/codes
+Content-Type: application/json
+
+{
+  "product_codes": [
+    "f594520a-db5a-411b-b129-14c79e44d3d8",
+    "c950540d-dba0-433a-8fa9-d3945e117bf2",
+    "01231323-n0yy-1a0z"
+  ]
+}
+

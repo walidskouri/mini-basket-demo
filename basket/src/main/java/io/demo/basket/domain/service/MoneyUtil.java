@@ -24,4 +24,8 @@ public class MoneyUtil {
         return BigMoney.ofScale(CURRENCY_EURO, unscaledAmount, SCALE_EURO);
     }
 
+    public static BigMoney unscaledToMoney(long unscaledAmount, int scale) {
+        return BigMoney.ofScale(CURRENCY_EURO, unscaledAmount, scale).withScale(SCALE_EURO, RoundingMode.HALF_UP);
+    }
+
 }

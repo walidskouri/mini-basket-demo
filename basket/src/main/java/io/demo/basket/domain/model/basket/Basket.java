@@ -1,5 +1,6 @@
-package io.demo.basket.domain.model.basket.offer;
+package io.demo.basket.domain.model.basket;
 
+import io.demo.basket.domain.model.basket.offer.Offer;
 import io.demo.basket.domain.service.MoneyUtil;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,6 +10,7 @@ import org.joda.money.BigMoney;
 
 import java.io.Serializable;
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
 
@@ -30,6 +32,8 @@ public class Basket implements Serializable {
 
     private List<Offer> offers;
 
+
+
     public BigMoney getTotalOffersMonetaryAmount() {
         return this.getOffers()
                 .stream()
@@ -37,6 +41,14 @@ public class Basket implements Serializable {
                 .map(offer -> offer.getLinePrice(offer.getQuantity()))
                 .reduce(BigMoney::plus)
                 .orElse(MoneyUtil.unscaledToMoney(0));
+    }
+
+
+    public List<Offer> getOffers() {
+        if (null == offers) {
+            offers = new ArrayList<>();
+        }
+        return offers;
     }
 
     public Integer getTotalOffersCount() {
