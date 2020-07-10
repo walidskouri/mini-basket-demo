@@ -5,21 +5,18 @@ import io.demo.basket.domain.api.BasketServicePort;
 import io.demo.basket.domain.model.basket.Basket;
 import io.demo.basket.domain.model.basket.offer.Offer;
 import io.demo.basket.domain.model.basket.offer.Product;
+import io.demo.basket.domain.spi.BasketPersistencePort;
 import io.demo.basket.domain.spi.ProductPort;
-import io.opentracing.Span;
-import io.opentracing.Tracer;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
-import org.joda.money.BigMoney;
 import org.springframework.stereotype.Service;
 
 import java.time.OffsetDateTime;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Random;
 import java.util.Set;
-import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -33,35 +30,26 @@ import static org.apache.commons.collections4.CollectionUtils.isEmpty;
 @RequiredArgsConstructor
 public class BasketService implements BasketServicePort {
 
+    private final BasketPersistencePort basketPersistencePort;
     private final ProductPort productPort;
-    private final Tracer tracer;
+
 
     @Override
     public Basket getBasket(String userLogin) {
-        tracer.activeSpan().log("Getting Basket for user " + userLogin);
-        Basket dummyBasket = new Basket();
-        dummyBasket.setCreationDate(OffsetDateTime.now());
-        dummyBasket.setLastModified(OffsetDateTime.now());
-        dummyBasket.setCustomerLogin(userLogin);
-        dummyBasket.setOffers(createDummyOffers());
-        return dummyBasket;
+        Optional<Basket> optionalBasket = basketPersistencePort.getBasket(userLogin);
+        return optionalBasket.orElseGet(() -> basketPersistencePort
+                .saveBasket(Basket.builder().customerLogin(userLogin).offersCount(0).lastModified(OffsetDateTime.now()).creationDate(OffsetDateTime.now()).build(), userLogin));
     }
 
     @Override
     public Basket addProducts(String userLogin, List<String> productCodes) {
-        Span serverSpan = tracer.activeSpan();
-        Span span = tracer.buildSpan("addProductsSpan")
-                .asChildOf(serverSpan.context())
-                .start();
-        tracer.activeSpan().log("Adding offer to the Basket of " + userLogin + " : " + productCodes);
-        Basket dummyBasket = getBasket(userLogin);
-        List<Offer> newOffers = toOffers(productPort.searchProducts(concatAllOfferCodesToQuery(dummyBasket.getOffers(), productCodes)));
+        Basket basket = getBasket(userLogin);
+        List<Offer> newOffers = toOffers(productPort.searchProducts(concatAllOfferCodesToQuery(basket.getOffers(), productCodes)));
         List<Offer> consolidated = consolidateNotFoundOffers(newOffers, productCodes);
-        dummyBasket.getOffers().addAll(consolidated);
-        dummyBasket.setOffers(completeOffers(newOffers, dummyBasket.getOffers()));
-        tracer.activeSpan().log("Returning new Basket of " + userLogin);
-        span.finish();
-        return dummyBasket;
+        basket.getOffers().addAll(consolidated);
+        basket.setOffers(completeOffers(newOffers, basket.getOffers()));
+        basket.setLastModified(OffsetDateTime.now());
+        return basketPersistencePort.saveBasket(basket, userLogin);
     }
 
     private List<String> concatAllOfferCodesToQuery(List<Offer> offers, List<String> productCodes) {
@@ -98,6 +86,7 @@ public class BasketService implements BasketServicePort {
 
 
     private List<Offer> completeOrReplaceExistingOffersWithOffersToAdd(List<Offer> offersToAdd, List<Offer> offersInBasket) {
+
         Set<String> offersToAddIds = offersToAdd.stream()
                 .map(Offer::getId)
                 .collect(toSet());
@@ -107,11 +96,6 @@ public class BasketService implements BasketServicePort {
                 .collect(toList());
 
         return Stream.concat(existingOffersWithoutOnesToAdd.stream(), offersToAdd.stream()).collect(toList());
-
-//        return offersInBasket
-//                .stream()
-//                .map(offer -> Offer.completeOfferWithProductInfo(offersToAdd).apply(offer))
-//                .collect(Collectors.toList());
     }
 
     private List<Offer> toOffers(List<Product> foundProducts) {
@@ -129,26 +113,4 @@ public class BasketService implements BasketServicePort {
                 .build();
     }
 
-    private List<Offer> createDummyOffers() {
-        List<Offer> offers = new ArrayList<>();
-        for (int i = 0; i < new Random().nextInt(2); i++) {
-            offers.add(dummyOffer("Offer" + i + 1));
-        }
-        return offers;
-    }
-
-    private Offer dummyOffer(String name) {
-        return Offer
-                .builder()
-                .id(UUID.randomUUID().toString())
-                .name(name)
-                .quantity(new Random().nextInt(12) + 1)
-                .unitPrice(createDummyPrice())
-                .build();
-    }
-
-    private BigMoney createDummyPrice() {
-        return MoneyUtil
-                .unscaledToMoney(new Random().nextInt(300) + 100);
-    }
 }

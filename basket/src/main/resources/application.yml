@@ -11,11 +11,20 @@ info:
   version-contract: V1
   version-contract-api: 0.0.1
 
+
 spring:
   main:
     allow-bean-definition-overriding: true
   application:
-    name: Basket
+    name: Basket-MS
+  data:
+    mongodb:
+      database: demo
+      password: walid
+      username: walid
+      host: localhost
+      port: 27017
+      authentication-database: demo
 
 management:
   endpoint:

@@ -1,7 +1,9 @@
 package io.demo.basket.application.validator;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.demo.basket.application.rest.RestErrorException.RestErrorResponse;
+import io.demo.basket.application.rest.exception.RestErrorResponse;
+import io.opentracing.Span;
+import io.opentracing.Tracer;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -22,12 +24,18 @@ import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 public class HeaderValidatorHandlerInterceptor implements HandlerInterceptor {
 
     private final ObjectMapper objectMapper;
+    private final Tracer tracer;
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
         if (isNotEmpty(request.getHeader(USER_LOGIN_LABEL))) {
             return true;
         } else {
+            Span currentSpan = tracer.activeSpan();
+            Span span = tracer.buildSpan("headerMissingLogin")
+                    .asChildOf(currentSpan.context())
+                    .start();
+            span.setTag("error", true).log("BAD_REQUEST : " + String.format("The header must contain the '%s' element ", USER_LOGIN_LABEL));
             response.setStatus(HttpStatus.BAD_REQUEST.value());
             RestErrorResponse restErrorResponse = RestErrorResponse.builder()
                     .message("Access not allowed")
@@ -42,6 +50,9 @@ public class HeaderValidatorHandlerInterceptor implements HandlerInterceptor {
             } catch (IOException e) {
                 log.error("Error while sending validation error message");
             }
+
+            span.finish();
+
             return false;
         }
     }

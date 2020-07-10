@@ -7,6 +7,9 @@ import io.demo.basket.infrastructure.gateway.products.payload.GatewayProduct;
 import io.demo.basket.infrastructure.gateway.products.payload.GetProductsDetailsRequest;
 import io.demo.basket.infrastructure.mapper.ProductGateWayToServiceMapper;
 import io.demo.basket.infrastructure.setting.ProductSetting;
+import io.demo.basket.infrastructure.util.logging.CallType;
+import io.demo.basket.infrastructure.util.logging.TraceMethodCall;
+import io.demo.basket.infrastructure.util.logging.TracingConstant;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -20,7 +23,9 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static io.demo.basket.infrastructure.gateway.GatewayErrorHandler.toInfrastructureException;
+import static io.demo.basket.domain.exception.ErrorMessageType.SEARCH_PRODUCTS_WITH_PRODUCT_GENERIC;
+import static io.demo.basket.infrastructure.gateway.GatewayConstants.PRODUCT_EX_OBJ;
+import static io.demo.basket.infrastructure.gateway.GatewayErrorHandler.throwInfrastructureException;
 
 @Component
 @RequiredArgsConstructor
@@ -36,6 +41,7 @@ public class ProductGatewayAdapter implements ProductPort {
     private final RestTemplate productRestTemplate;
 
     @Override
+    @TraceMethodCall(params = "{" + TracingConstant.PRODUCT_CODES + ": #queryOffers}", type = CallType.GATEWAY)
     public List<Product> searchProducts(List<String> queryOffers) {
         UriComponents uriComponents = UriComponentsBuilder
                 .fromHttpUrl(productSetting.getBaseUri())
@@ -46,18 +52,16 @@ public class ProductGatewayAdapter implements ProductPort {
                 .builder()
                 .productCodes(queryOffers)
                 .build();
+        ResponseEntity<GatewayProduct[]> listResponseEntity = null;
         try {
-            ResponseEntity<GatewayProduct[]> listResponseEntity = productRestTemplate
+            listResponseEntity = productRestTemplate
                     .postForEntity(uriComponents.toUri(), request, GatewayProduct[].class);
-
-
-
-            return productGateWayToServiceMapper.toProducts(Stream.of(listResponseEntity.getBody())
-                    .filter(Objects::nonNull)
-                    .collect(Collectors.toList()));
         } catch (Exception e) {
-            throw toInfrastructureException(e);
+            throwInfrastructureException(e, SEARCH_PRODUCTS_WITH_PRODUCT_GENERIC, PRODUCT_EX_OBJ);
         }
+        return productGateWayToServiceMapper.toProducts(Stream.of(listResponseEntity.getBody())
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList()));
     }
 
 }
