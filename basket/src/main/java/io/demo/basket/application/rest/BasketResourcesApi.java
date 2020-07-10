@@ -1,6 +1,6 @@
 package io.demo.basket.application.rest;
 
-import io.demo.basket.application.rest.RestErrorException.RestErrorResponse;
+import io.demo.basket.application.rest.exception.RestErrorResponse;
 import io.demo.basket.application.rest.request.AddProductRequest;
 import io.demo.basket.application.rest.response.RestBasketResponse;
 import io.swagger.annotations.Api;

@@ -11,6 +11,8 @@ import org.springframework.web.reactive.function.server.RouterFunction;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Flux;
 
+import java.util.Objects;
+
 import static org.springframework.web.reactive.function.server.RouterFunctions.route;
 
 @Configuration
@@ -39,8 +41,7 @@ public class ProductHttpConfig {
     }
 
     private Flux<String> fromRequest(GetProductsDetailsRequest getProductsDetailsRequest) {
-        log.info("Request : " + getProductsDetailsRequest);
-        return Flux.fromStream(getProductsDetailsRequest.getProductCodes().stream());
+        return Flux.fromStream(getProductsDetailsRequest.getProductCodes().stream().filter(Objects::nonNull));
     }
 
 }

@@ -1,13 +1,15 @@
-package io.demo.basket.application.rest.RestErrorException;
+package io.demo.basket.application.rest;
 
 
 import io.demo.basket.application.mapper.ServiceToRestBasketMapper;
-import io.demo.basket.application.rest.BasketResourcesApi;
 import io.demo.basket.application.rest.request.AddProductRequest;
 import io.demo.basket.application.rest.response.RestBasketResponse;
 import io.demo.basket.application.security.CurrentConnectedUser;
 import io.demo.basket.domain.api.BasketServicePort;
 import io.demo.basket.domain.model.basket.Basket;
+import io.demo.basket.infrastructure.util.logging.CallType;
+import io.demo.basket.infrastructure.util.logging.TraceMethodCall;
+import io.demo.basket.infrastructure.util.logging.TracingConstant;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -32,6 +34,7 @@ public class BasketsResources implements BasketResourcesApi {
     private static final String ADD_PRODUCTS_URL = BASE_BASKET_URL + "/products";
 
     @Override
+    @TraceMethodCall(params = "{" + TracingConstant.USER_LOGIN + ": #customerLogin}", type = CallType.RESOURCE)
     @GetMapping(value = BASE_BASKET_URL)
     public ResponseEntity<RestBasketResponse> getBasket(@CurrentConnectedUser String customerLogin) {
         Basket domainBasket = basketServicePort.getBasket(customerLogin);

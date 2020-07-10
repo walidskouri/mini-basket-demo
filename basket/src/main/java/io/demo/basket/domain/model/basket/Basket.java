@@ -32,6 +32,8 @@ public class Basket implements Serializable {
 
     private List<Offer> offers;
 
+    private long version;
+
 
     public BigMoney getTotalOffersMonetaryAmount() {
         return this.getOffers()

@@ -1,6 +1,7 @@
 package io.demo.basket.application.security;
 
 
+import io.demo.basket.infrastructure.util.Utility;
 import org.springframework.core.MethodParameter;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.stereotype.Component;
@@ -27,24 +28,10 @@ public class CurrentConnectedUserArgumentResolver implements HandlerMethodArgume
 
     @Override
     public Object resolveArgument(MethodParameter methodParameter, ModelAndViewContainer modelAndViewContainer, NativeWebRequest nativeWebRequest, WebDataBinderFactory webDataBinderFactory) throws Exception {
-        return getHeader(USER_LOGIN_LABEL);
+        return Utility.getHeader(USER_LOGIN_LABEL);
     }
 
-    private static HttpServletRequest getCurrentHttpServletRequest() {
-        return Optional.ofNullable(RequestContextHolder.getRequestAttributes())
-                .filter(requestAttributes -> ServletRequestAttributes.class.isAssignableFrom(requestAttributes.getClass()))
-                .map(requestAttributes -> (((ServletRequestAttributes) requestAttributes).getRequest()))
-                .orElse(null);
-    }
 
-    private static String getHeader(String headerName) {
-        String headerValue = null;
-        HttpServletRequest httpServletRequest = getCurrentHttpServletRequest();
-        if (httpServletRequest != null) {
-            headerValue = httpServletRequest.getHeader(headerName);
-        }
-        return headerValue;
-    }
 
 
     private <T extends Annotation> T findMethodAnnotation(Class<T> annotationClass,
