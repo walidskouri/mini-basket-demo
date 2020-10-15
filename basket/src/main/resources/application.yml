@@ -20,10 +20,10 @@ spring:
   data:
     mongodb:
       database: demo
-      password: walid
-      username: walid
+      password: demo
+      username: demo
       host: localhost
-      port: 27017
+      port: 27018
       authentication-database: demo
 
 management:
@@ -51,4 +51,4 @@ opentracing:
       port: 6831
 
 products:
-  base-uri: http://localhost:8090
+  base-uri: http://localhost:5001

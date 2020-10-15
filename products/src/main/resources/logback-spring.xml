@@ -92,12 +92,14 @@
     </appender>
 
 
-
-
     <root level="INFO">
         <appender-ref ref="CONSOLE_JSON"/>
         <appender-ref ref="logstash"/>
     </root>
+
+    <logger name="org.springframework" level="INFO"/>
+    <logger name="io.demo" level="INFO"/>
+    <logger name="io.jaegertracing.internal.reporters" level="ERROR"/>
 
 
 </configuration>

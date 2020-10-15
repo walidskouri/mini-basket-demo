@@ -1,5 +1,5 @@
 server:
-  port: 8090
+  port: 5001
 
 spring:
   main:
@@ -9,10 +9,10 @@ spring:
   data:
     mongodb:
       database: demo
-      password: walid
-      username: walid
+      password: demo
+      username: demo
       host: localhost
-      port: 27017
+      port: 27018
 
 opentracing:
   jaeger:

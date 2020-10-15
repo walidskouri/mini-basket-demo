@@ -50,6 +50,7 @@ public class TraceMethodCallAspect {
         Span span = tracer.buildSpan(String.format("[%S] Method Call [%s], ", pointCutDescription.getServiceType(), pointCutDescription.getServiceName()))
                 .asChildOf(serverSpan.context())
                 .start();
+        span.setTag("type", pointCutDescription.getServiceType());
         Map<String, Object> logParameters = traceMethodSpelParser.parseParameters(
                 pointCutDescription.getMethodParametersName(),
                 pointCutDescription.getMethodArguments(),
@@ -69,8 +70,8 @@ public class TraceMethodCallAspect {
             stopWatch.stop();
             logServiceEnd(pointCutDescription.getServiceName(), pointCutDescription.serviceType, stopWatch.getTotalTimeMillis());
             if (!isEmpty(logParameters)) {
+                logParameters.forEach((k, v) -> span.setTag(k, v.toString()));
                 span.log(logParameters.toString());
-                tracer.activeSpan().log(logParameters.toString());
             }
             span.finish();
         }

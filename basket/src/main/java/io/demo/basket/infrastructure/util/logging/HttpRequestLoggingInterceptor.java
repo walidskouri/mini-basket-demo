@@ -5,7 +5,6 @@ import io.opentracing.Tracer;
 import lombok.extern.slf4j.Slf4j;
 import net.logstash.logback.argument.StructuredArgument;
 import net.logstash.logback.marker.ObjectAppendingMarker;
-import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpRequest;
 import org.springframework.http.client.ClientHttpRequestExecution;
@@ -29,7 +28,8 @@ import static net.logstash.logback.argument.StructuredArguments.value;
 public class HttpRequestLoggingInterceptor implements ClientHttpRequestInterceptor {
 
     private static final String REQUEST_START = "Request start";
-    private static final String BODY = "body";
+    private static final String REQUEST_BODY = "request-body";
+    private static final String RESPONSE_BODY = "response-body";
     private static final String METHOD = "method";
     private static final String REQUEST_END = "Request end";
     @Value("${info.version-contract}")
@@ -69,6 +69,7 @@ public class HttpRequestLoggingInterceptor implements ClientHttpRequestIntercept
     private void logRequestEnd(HttpRequest httpRequest, StopWatch stopWatch, ClientHttpResponse response, Span span) {
         try {
             byte[] responseBody = FileCopyUtils.copyToByteArray(response.getBody());
+            String responseBodyStr = new String(responseBody, StandardCharsets.UTF_8);
             StructuredArgument[] logsParam = {
                     value(TYPE, RESPONSE),
                     value(URI, httpRequest.getURI().toString()),
@@ -76,14 +77,12 @@ public class HttpRequestLoggingInterceptor implements ClientHttpRequestIntercept
                     value(STATUS_CODE, String.valueOf(response.getRawStatusCode())),
                     value(STOP_WATCH, stopWatch.getTotalTimeMillis()),
                     value(MEMORY, String.valueOf(responseBody.length)),
-                    value(VERSION_LABEL, version)};
-            String responseBodyStr = new String(responseBody, StandardCharsets.UTF_8);
-            StructuredArgument[] logParamWithGatewayBodyEnable = ArrayUtils.addAll(logsParam,
-                    value(BODY, responseBodyStr));
-            log.info(REQUEST_END, logParamWithGatewayBodyEnable);
-            Stream.of(logParamWithGatewayBodyEnable).map(ObjectAppendingMarker.class::cast)
+                    value(VERSION_LABEL, version),
+                    value(RESPONSE_BODY, responseBodyStr)};
+            log.info(REQUEST_END, logsParam);
+            Stream.of(logsParam).map(ObjectAppendingMarker.class::cast)
                     .forEach(arg -> span.setTag(arg.getFieldName(), arg.getFieldValue().toString()));
-            span.log(Arrays.toString(logParamWithGatewayBodyEnable));
+            span.log(Arrays.toString(logsParam));
         } catch (Exception e) {
             log.error(e.getMessage(), MORE_INFO, log.getName());
         }
@@ -96,15 +95,12 @@ public class HttpRequestLoggingInterceptor implements ClientHttpRequestIntercept
                 value(TracingConstant.TYPE, REQUEST),
                 value(URI, request.getURI()),
                 value(METHOD, request.getMethod().name()),
-                value(BODY, bodyStr),
+                value(REQUEST_BODY, bodyStr),
                 value(VERSION_LABEL, version)
         };
-
         Stream.of(logsParam).map(ObjectAppendingMarker.class::cast)
                 .forEach(arg -> span.setTag(arg.getFieldName(), arg.getFieldValue().toString()));
         log.info(REQUEST_START, logsParam);
-
-
         span.log(Arrays.toString(logsParam));
     }
 
