@@ -13,6 +13,9 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import static io.demo.basket.domain.exception.ErrorMessageType.GET_STOCK_INFO_BAD_REQUEST_GENERIC;
+import static io.demo.basket.infrastructure.gateway.GatewayConstants.STOCK_EX_OBJ;
+
 @Component
 @Slf4j
 @RequiredArgsConstructor
@@ -27,7 +30,12 @@ public class StockGatewayAdapter implements StockPort {
                 .fromHttpUrl(stockSettings.getBaseUri())
                 .path(productCode)
                 .build();
-        ResponseEntity<GatewayProductStockInfo> response = stockRestTemplate.getForEntity(uriComponents.toUri(), GatewayProductStockInfo.class);
+        ResponseEntity<GatewayProductStockInfo> response = null;
+        try {
+            response = stockRestTemplate.getForEntity(uriComponents.toUri(), GatewayProductStockInfo.class);
+        } catch (Exception e) {
+            StockErrorHandler.throwInfrastructureException(e, GET_STOCK_INFO_BAD_REQUEST_GENERIC, STOCK_EX_OBJ);
+        }
         return stockGateWayToServiceMapper.toStock(response.getBody());
     }
 

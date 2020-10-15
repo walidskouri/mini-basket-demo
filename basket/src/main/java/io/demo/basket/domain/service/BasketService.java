@@ -16,6 +16,7 @@ import org.apache.commons.lang3.BooleanUtils;
 import org.springframework.stereotype.Service;
 
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -103,7 +104,21 @@ public class BasketService implements BasketServicePort {
 
 
     private List<ProductStockInfo> getProductsAvailabilityInfoFutures(List<String> productCodes) {
-        return productCodes.stream().map(stockPort::getProductAvailabilityInfo).collect(Collectors.toList());
+        List<ProductStockInfo> list = new ArrayList<>();
+        for (String code : productCodes) {
+            ProductStockInfo stockInfo;
+            try {
+                stockInfo = stockPort.getProductAvailabilityInfo(code);
+            } catch (Exception e) {
+                log.error("Error while getting Stock info " + e.getMessage());
+                stockInfo = ProductStockInfo.builder()
+                        .productCode(code)
+                        .quantityAvailable(0)
+                        .isProductAvailable(false).build();
+            }
+            list.add(stockInfo);
+        }
+        return list;
     }
 
     public static Function<Offer, Offer> completeOfferWithStockInfo(List<ProductStockInfo> productStockInfoList) {

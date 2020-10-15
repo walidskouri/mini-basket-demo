@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.ResourceAccessException;
 
 import java.util.Random;
 
@@ -27,7 +28,12 @@ public class StockController {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        return ResponseEntity.ok().body(ProductStockInfo.builder().isProductAvailable(true).productCode(productCode).quantityAvailable(5 + sleepRandomMS).build());
+
+        if (sleepRandomMS % 2 == 0) {
+            throw new ResourceAccessException("Random number " + sleepRandomMS + " is even !!");
+        }
+
+        return ResponseEntity.ok().body(ProductStockInfo.builder().isProductAvailable(true).productCode(productCode).quantityAvailable(sleepRandomMS).build());
     }
 
 }
