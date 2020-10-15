@@ -25,7 +25,7 @@ public class ProductHttpConfig {
                 .GET("/products",
                         serverRequest -> ServerResponse
                                 .ok()
-                                .body(service.all().log(), Product.class))
+                                .body(service.all(), Product.class))
                 .GET("/products/{name}",
                         serverRequest -> ServerResponse
                                 .ok()

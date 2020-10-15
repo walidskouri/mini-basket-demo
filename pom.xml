@@ -12,9 +12,7 @@
     <modules>
         <module>products</module>
         <module>basket</module>
-        <module>checkout</module>
-        <module>config</module>
-        <module>slot</module>
+        <module>stock</module>
     </modules>
 
     <packaging>pom</packaging>
