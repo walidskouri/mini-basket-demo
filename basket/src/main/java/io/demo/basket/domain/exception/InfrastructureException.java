@@ -26,7 +26,6 @@ public class InfrastructureException extends BasketException {
     }
 
 
-
     public static InfrastructureException.InfrastructureExceptionBuilder builder() {
         return new InfrastructureException.InfrastructureExceptionBuilder();
     }

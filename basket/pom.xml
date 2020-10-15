@@ -15,7 +15,7 @@
     <artifactId>basket</artifactId>
     <version>0.0.1-SNAPSHOT</version>
 
-    <name>basket-ms</name>
+    <name>Basket MS</name>
     <description>Baskets microservice</description>
 
     <properties>
@@ -68,7 +68,7 @@
         <dependency>
             <groupId>io.opentracing.contrib</groupId>
             <artifactId>opentracing-spring-jaeger-web-starter</artifactId>
-            <version>3.1.2</version>
+            <version>3.2.2</version>
         </dependency>
 
         <dependency>
@@ -89,7 +89,7 @@
         <dependency>
             <groupId>net.logstash.logback</groupId>
             <artifactId>logstash-logback-encoder</artifactId>
-            <version>6.3</version>
+            <version>${logstash.loback.encoder.version}</version>
         </dependency>
 
 
@@ -123,11 +123,6 @@
             <scope>provided</scope>
         </dependency>
 
-        <dependency>
-            <groupId>net.logstash.logback</groupId>
-            <artifactId>logstash-logback-encoder</artifactId>
-            <version>${logstash.loback.encoder.version}</version>
-        </dependency>
 
         <dependency>
             <groupId>io.micrometer</groupId>

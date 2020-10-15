@@ -6,7 +6,7 @@ import io.demo.basket.domain.spi.ProductPort;
 import io.demo.basket.infrastructure.gateway.products.payload.GatewayProduct;
 import io.demo.basket.infrastructure.gateway.products.payload.GetProductsDetailsRequest;
 import io.demo.basket.infrastructure.mapper.ProductGateWayToServiceMapper;
-import io.demo.basket.infrastructure.setting.ProductSetting;
+import io.demo.basket.infrastructure.setting.ProductSettings;
 import io.demo.basket.infrastructure.util.logging.CallType;
 import io.demo.basket.infrastructure.util.logging.TraceMethodCall;
 import io.demo.basket.infrastructure.util.logging.TracingConstant;
@@ -36,7 +36,7 @@ public class ProductGatewayAdapter implements ProductPort {
 
     private final ProductGateWayToServiceMapper productGateWayToServiceMapper;
 
-    private final ProductSetting productSetting;
+    private final ProductSettings productSettings;
 
     private final RestTemplate productRestTemplate;
 
@@ -44,7 +44,7 @@ public class ProductGatewayAdapter implements ProductPort {
     @TraceMethodCall(params = "{" + TracingConstant.PRODUCT_CODES + ": #queryOffers}", type = CallType.GATEWAY)
     public List<Product> searchProducts(List<String> queryOffers) {
         UriComponents uriComponents = UriComponentsBuilder
-                .fromHttpUrl(productSetting.getBaseUri())
+                .fromHttpUrl(productSettings.getBaseUri())
                 .path(PRODUCTS_SEARCH)
                 .build();
 

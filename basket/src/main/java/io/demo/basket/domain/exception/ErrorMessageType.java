@@ -7,7 +7,9 @@ public enum ErrorMessageType {
 
     GENERAL_ERROR_MESSAGE(HttpStatus.INTERNAL_SERVER_ERROR, 4, "Error message"),
     SEARCH_PRODUCTS_WITH_PRODUCT_BAD_REQUEST(HttpStatus.BAD_REQUEST, 1001, "Bad request when searching from products"),
-    SEARCH_PRODUCTS_WITH_PRODUCT_GENERIC(HttpStatus.INTERNAL_SERVER_ERROR, 1002, "Search products from product-ms failed");
+    SEARCH_PRODUCTS_WITH_PRODUCT_GENERIC(HttpStatus.INTERNAL_SERVER_ERROR, 1002, "Search products from product-ms failed"),
+    GET_STOCK_INFO_BAD_REQUEST(HttpStatus.BAD_REQUEST, 1003, "Bad request when getting stock info"),
+    GET_STOCK_INFO_BAD_REQUEST_GENERIC(HttpStatus.INTERNAL_SERVER_ERROR, 1004, "Get stock availability from stock-ms failed");
 
     /**
      * The http status.

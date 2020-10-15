@@ -6,10 +6,10 @@ import org.springframework.context.annotation.Configuration;
 import javax.validation.constraints.NotBlank;
 
 @Configuration
-@ConfigurationProperties(prefix = ProductSetting.PRODUCT_PREFIX)
-public class ProductSetting {
+@ConfigurationProperties(prefix = StockSettings.STOCK_PREFIX)
+public class StockSettings {
 
-    public static final String PRODUCT_PREFIX = "products";
+    public static final String STOCK_PREFIX = "stock";
 
     @NotBlank
     private String baseUri;

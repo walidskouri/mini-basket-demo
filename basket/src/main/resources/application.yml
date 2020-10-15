@@ -39,8 +39,11 @@ management:
       path-mapping:
         prometheus: prometheus
 
+
+
+
 server:
-  port: 9090
+  port: 8080
   servlet:
     context-path: /
 
@@ -52,3 +55,18 @@ opentracing:
 
 products:
   base-uri: http://localhost:5001
+
+stock:
+  base-uri: http://localhost:5005/v1/stock/
+
+async:
+  main:
+    core-pool-size: 20
+    max-pool-size: 30
+    queue-capacity: 120
+    thread-name-prefix: basket-
+  stock:
+    core-pool-size: 20
+    max-pool-size: 30
+    queue-capacity: 120
+    thread-name-prefix: stock-

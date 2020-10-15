@@ -33,6 +33,9 @@ public class RestOffer {
     @JsonProperty("available")
     private boolean available;
 
+    @ApiModelProperty(value = "The stock quantity available")
+    @JsonProperty("quantity_available")
+    private Integer quantityAvailable;
 
 
 }

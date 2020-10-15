@@ -33,9 +33,4 @@ public class RestBasketResponse {
     private OffsetDateTime lastModified;
 
 
-
-
-
-
-
 }

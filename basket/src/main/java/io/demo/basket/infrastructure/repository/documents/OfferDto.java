@@ -34,4 +34,6 @@ public class OfferDto {
     @Field
     private String name;
 
+
+
 }

@@ -32,8 +32,6 @@ public class CurrentConnectedUserArgumentResolver implements HandlerMethodArgume
     }
 
 
-
-
     private <T extends Annotation> T findMethodAnnotation(Class<T> annotationClass,
                                                           MethodParameter parameter) {
         T annotation = parameter.getParameterAnnotation(annotationClass);

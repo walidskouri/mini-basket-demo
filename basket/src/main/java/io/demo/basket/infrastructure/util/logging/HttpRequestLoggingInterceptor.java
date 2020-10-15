@@ -43,7 +43,11 @@ public class HttpRequestLoggingInterceptor implements ClientHttpRequestIntercept
 
     @Override
     public ClientHttpResponse intercept(HttpRequest httpRequest, byte[] body, ClientHttpRequestExecution clientHttpRequestExecution) throws IOException {
+
         Span serverSpan = tracer.activeSpan();
+        if (null == serverSpan) {
+            serverSpan = tracer.buildSpan("Async").start();
+        }
         Span span = tracer.buildSpan(String.format("[GATEWAY] Intercept %s %s",
                 Objects.requireNonNull(httpRequest.getMethod()).toString(),
                 httpRequest.getURI().toString()))

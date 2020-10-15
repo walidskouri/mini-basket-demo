@@ -8,4 +8,5 @@ public final class GatewayConstants {
     }
 
     public static final String PRODUCT_EX_OBJ = "PRODUCT";
+    public static final String STOCK_EX_OBJ = "STOCK";
 }

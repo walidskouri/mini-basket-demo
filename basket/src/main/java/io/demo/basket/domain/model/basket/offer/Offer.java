@@ -29,6 +29,9 @@ public class Offer implements Serializable {
 
     private boolean available = true;
 
+    // stock
+    private Integer quantityAvailable;
+
     public BigMoney getLinePrice(Integer quantity) {
         BigMoney computedLinePrice = MoneyUtil.unscaledToMoney(0);
         if (unitPrice != null && quantity >= 0 && unitPrice.isPositiveOrZero()) {

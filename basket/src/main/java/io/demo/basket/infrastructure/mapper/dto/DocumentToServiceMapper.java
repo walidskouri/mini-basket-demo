@@ -16,6 +16,7 @@ public abstract class DocumentToServiceMapper {
     public abstract Basket documentToServiceBasket(BasketDocument basketDocument);
 
     @Mapping(expression = "java(dtoToServiceMoney(offerDto.getUnitPrice()))", target = "unitPrice")
+    @Mapping(source = "productCode", target = "id")
     public abstract Offer toOffer(OfferDto offerDto);
 
     public BigMoney dtoToServiceMoney(MoneyDto moneyDto) {

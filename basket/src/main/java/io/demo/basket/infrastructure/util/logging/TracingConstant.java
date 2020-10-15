@@ -46,6 +46,9 @@ public final class TracingConstant {
 
     public static final String EXCEPTION_TYPE = "exception_type";
 
+    public static final String EXCEPTION = "exception";
+
+
     public static final String MESSAGE = "message";
 
 }
