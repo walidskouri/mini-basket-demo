@@ -16,7 +16,6 @@ import org.springframework.util.StopWatch;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
 import java.util.Objects;
 import java.util.stream.Stream;
 
@@ -34,12 +33,12 @@ public class HttpRequestLoggingInterceptor implements ClientHttpRequestIntercept
     private static final String REQUEST_END = "Request end";
     @Value("${info.version-contract}")
     private String version;
+
     private final Tracer tracer;
 
     public HttpRequestLoggingInterceptor(Tracer tracer) {
         this.tracer = tracer;
     }
-
 
     @Override
     public ClientHttpResponse intercept(HttpRequest httpRequest, byte[] body, ClientHttpRequestExecution clientHttpRequestExecution) throws IOException {
@@ -53,6 +52,7 @@ public class HttpRequestLoggingInterceptor implements ClientHttpRequestIntercept
                 httpRequest.getURI().toString()))
                 .asChildOf(serverSpan.context())
                 .start();
+
         logRequestStart(httpRequest, body, span);
         StopWatch stopWatch = new StopWatch();
         stopWatch.start();
@@ -86,7 +86,7 @@ public class HttpRequestLoggingInterceptor implements ClientHttpRequestIntercept
             log.info(REQUEST_END, logsParam);
             Stream.of(logsParam).map(ObjectAppendingMarker.class::cast)
                     .forEach(arg -> span.setTag(arg.getFieldName(), arg.getFieldValue().toString()));
-            span.log(Arrays.toString(logsParam));
+
         } catch (Exception e) {
             log.error(e.getMessage(), MORE_INFO, log.getName());
         }
@@ -105,7 +105,6 @@ public class HttpRequestLoggingInterceptor implements ClientHttpRequestIntercept
         Stream.of(logsParam).map(ObjectAppendingMarker.class::cast)
                 .forEach(arg -> span.setTag(arg.getFieldName(), arg.getFieldValue().toString()));
         log.info(REQUEST_START, logsParam);
-        span.log(Arrays.toString(logsParam));
     }
 
 }

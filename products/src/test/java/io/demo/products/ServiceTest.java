@@ -4,7 +4,6 @@ package io.demo.products;
 import io.demo.products.models.Product;
 import io.demo.products.repository.ProductRepository;
 import io.demo.products.service.ProductService;
-import io.opentracing.Tracer;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -23,16 +22,12 @@ public class ServiceTest {
     @Mock
     private ProductRepository repo;
 
-    @Mock
-    private Tracer tracer;
-
-
     private ProductService service;
 
     @Test
     public void testSearchProducts() {
 
-        service = new ProductService(tracer, repo);
+        service = new ProductService(repo);
 
         Product productA = new Product();
         productA.setId("id-a");

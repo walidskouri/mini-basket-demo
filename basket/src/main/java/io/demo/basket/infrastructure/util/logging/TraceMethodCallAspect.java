@@ -4,12 +4,9 @@ import io.demo.basket.domain.exception.BasketException;
 import io.demo.basket.domain.exception.DomainException;
 import io.demo.basket.domain.exception.Infrastructure4xxException;
 import io.demo.basket.domain.exception.InfrastructureException;
-import io.opentracing.Span;
-import io.opentracing.Tracer;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.logstash.logback.argument.StructuredArgument;
-import net.logstash.logback.marker.ObjectAppendingMarker;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -29,7 +26,6 @@ import static io.demo.basket.domain.exception.ErrorMessageType.GENERAL_ERROR_MES
 import static io.demo.basket.infrastructure.util.Utility.buildStacktraceForLog;
 import static io.demo.basket.infrastructure.util.logging.TracingConstant.*;
 import static net.logstash.logback.argument.StructuredArguments.value;
-import static org.springframework.util.CollectionUtils.isEmpty;
 
 @Aspect
 @Component
@@ -38,7 +34,7 @@ import static org.springframework.util.CollectionUtils.isEmpty;
 public class TraceMethodCallAspect {
 
     private final TraceMethodSpelParser traceMethodSpelParser;
-    private final Tracer tracer;
+
 
     @Value("${info.version-contract}")
     private String version;
@@ -46,11 +42,7 @@ public class TraceMethodCallAspect {
     @Around("traceMethodCallAnnotation()")
     public Object logExecutionTime(ProceedingJoinPoint joinPoint) throws Throwable {
         PointCutDescription pointCutDescription = getDescription(joinPoint);
-        Span serverSpan = tracer.activeSpan();
-        Span span = tracer.buildSpan(String.format("[%S] Method Call [%s], ", pointCutDescription.getServiceType(), pointCutDescription.getServiceName()))
-                .asChildOf(serverSpan.context())
-                .start();
-        span.setTag("type", pointCutDescription.getServiceType());
+
         Map<String, Object> logParameters = traceMethodSpelParser.parseParameters(
                 pointCutDescription.getMethodParametersName(),
                 pointCutDescription.getMethodArguments(),
@@ -63,17 +55,13 @@ public class TraceMethodCallAspect {
         try {
             returnValue = joinPoint.proceed();
         } catch (Throwable throwable) {
-            span.setTag("error", true);
-            logException(pointCutDescription.getServiceName(), pointCutDescription.serviceType, throwable, span);
+
+            logException(pointCutDescription.getServiceName(), pointCutDescription.serviceType, throwable);
             throw throwable;
         } finally {
             stopWatch.stop();
             logServiceEnd(pointCutDescription.getServiceName(), pointCutDescription.serviceType, stopWatch.getTotalTimeMillis());
-            if (!isEmpty(logParameters)) {
-                logParameters.forEach((k, v) -> span.setTag(k, v.toString()));
-                span.log(logParameters.toString());
-            }
-            span.finish();
+
         }
         return returnValue;
     }
@@ -95,7 +83,7 @@ public class TraceMethodCallAspect {
                 value(VERSION_LABEL, version));
     }
 
-    public void logException(String serviceName, String serviceType, Throwable ex, Span span) {
+    public void logException(String serviceName, String serviceType, Throwable ex) {
 
 
         StringBuilder message = new StringBuilder("Error in " + serviceType);
@@ -134,8 +122,6 @@ public class TraceMethodCallAspect {
             logsParam.add(value(STACKTRACE, buildStacktraceForLog(ex)));
         }
 
-        logsParam.stream().map(ObjectAppendingMarker.class::cast)
-                .forEach(arg -> span.setTag(arg.getFieldName(), arg.getFieldValue().toString()));
 
         log.error(message.toString(), logsParam.toArray());
 

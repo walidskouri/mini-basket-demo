@@ -7,9 +7,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import io.demo.basket.infrastructure.config.interceptor.MdcPropertiesWebFilter;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
+import org.springframework.core.Ordered;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 
 import javax.validation.Validation;
@@ -19,6 +22,9 @@ import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 
+import static io.demo.basket.application.rest.BasketResourcesConstants.API_VERSION;
+import static io.demo.basket.application.rest.BasketResourcesConstants.BASE_BASKET_URL;
+
 @Configuration
 public class GlobalConfig {
 
@@ -26,6 +32,18 @@ public class GlobalConfig {
     public Validator validator() {
         return Validation.buildDefaultValidatorFactory().getValidator();
     }
+
+
+//    @Bean
+//    public FilterRegistrationBean<MdcPropertiesWebFilter> correlationFilter() {
+//        FilterRegistrationBean<MdcPropertiesWebFilter> filter = new FilterRegistrationBean<>();
+//        filter.setFilter(mdcPropertiesWebFilter());
+//        filter.addUrlPatterns(API_VERSION + BASE_BASKET_URL + "/*");
+//        filter.setName("CorrelationAndMdcClearFilter");
+//        filter.setOrder(Ordered.HIGHEST_PRECEDENCE); // Must be the first to keep MDC until the end of the request !!!!
+//        return filter;
+//    }
+
 
     @Primary
     @Bean

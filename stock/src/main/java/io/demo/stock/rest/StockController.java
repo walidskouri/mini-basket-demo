@@ -27,7 +27,7 @@ public class StockController {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        return ResponseEntity.ok().body(ProductStockInfo.builder().isProductAvailable(true).productCode(productCode).quantityAvailable(12).build());
+        return ResponseEntity.ok().body(ProductStockInfo.builder().isProductAvailable(true).productCode(productCode).quantityAvailable(5 + sleepRandomMS).build());
     }
 
 }

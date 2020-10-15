@@ -11,6 +11,12 @@ info:
   version-contract: V1
   version-contract-api: 0.0.1
 
+logging:
+  level:
+    io:
+      jaegertracing:
+        internal:
+          reporters: ERROR
 
 spring:
   main:

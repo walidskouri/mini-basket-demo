@@ -23,7 +23,6 @@ public class StockGatewayAdapter implements StockPort {
     private final RestTemplate stockRestTemplate;
 
     public ProductStockInfo getProductAvailabilityInfo(String productCode) {
-        log.info("Looking for stock info for product " + productCode);
         UriComponents uriComponents = UriComponentsBuilder
                 .fromHttpUrl(stockSettings.getBaseUri())
                 .path(productCode)
