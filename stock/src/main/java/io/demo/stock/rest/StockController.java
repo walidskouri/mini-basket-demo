@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.client.ResourceAccessException;
 
 import java.util.Random;
 
@@ -22,16 +21,16 @@ public class StockController {
     @GetMapping(value = "/stock/{product_code}")
     public ResponseEntity<ProductStockInfo> getStock(@PathVariable(name = "product_code") String productCode) {
         int sleepRandomMS = new Random().nextInt(400);
-        try {
-            log.info("Sleeping for {}  ms", sleepRandomMS);
-            Thread.sleep(sleepRandomMS);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        // try {
+        //     log.info("Sleeping for {}  ms", sleepRandomMS);
+        //     Thread.sleep(sleepRandomMS);
+        // } catch (InterruptedException e) {
+        //     e.printStackTrace();
+        // }
 
-        if (sleepRandomMS % 2 == 0) {
-            throw new ResourceAccessException("Random number " + sleepRandomMS + " is even !!");
-        }
+        // if (sleepRandomMS % 2 == 0) {
+        //     throw new ResourceAccessException("Random number " + sleepRandomMS + " is even !!");
+        // }
 
         return ResponseEntity.ok().body(ProductStockInfo.builder().isProductAvailable(true).productCode(productCode).quantityAvailable(sleepRandomMS).build());
     }
