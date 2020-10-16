@@ -45,19 +45,10 @@ management:
       path-mapping:
         prometheus: prometheus
 
-
-
-
 server:
   port: 8080
   servlet:
     context-path: /
-
-opentracing:
-  jaeger:
-    udp-sender:
-      host: localhost
-      port: 6831
 
 products:
   base-uri: http://localhost:5001

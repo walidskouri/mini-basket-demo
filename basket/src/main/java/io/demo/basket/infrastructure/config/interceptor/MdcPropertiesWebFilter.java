@@ -1,7 +1,6 @@
 package io.demo.basket.infrastructure.config.interceptor;
 
 import io.demo.basket.infrastructure.config.ConfigConstants;
-import io.opentracing.Tracer;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.MDC;
 import org.springframework.stereotype.Component;
@@ -27,8 +26,6 @@ import java.util.UUID;
 public class MdcPropertiesWebFilter implements javax.servlet.Filter {
 
 
-    private final Tracer tracer;
-
     @Override
     public void init(FilterConfig filterConfig) {
     }
@@ -41,10 +38,6 @@ public class MdcPropertiesWebFilter implements javax.servlet.Filter {
 
         if (Objects.isNull(correlationId)) {
             correlationId = UUID.randomUUID().toString();
-        }
-
-        if (null != tracer.activeSpan()) {
-            tracer.activeSpan().setTag("correlationId", correlationId);
         }
 
         try {

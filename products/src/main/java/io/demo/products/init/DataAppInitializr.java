@@ -33,7 +33,7 @@ public class DataAppInitializr {
     public void run() throws IOException {
         Date start = new Date();
         repo.deleteAll()
-                .thenMany((csvFileToFlux(Path.of(resourceLoader.getResource("classpath:data.csv").getURI()))
+                .thenMany((csvFileToFlux(Path.of("/tmp/data.csv"))
                         .map(this::lineToProduct))
                         .flatMap(repo::save))
                 .subscribe(

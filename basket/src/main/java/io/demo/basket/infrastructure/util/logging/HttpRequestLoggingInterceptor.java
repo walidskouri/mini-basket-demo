@@ -1,7 +1,5 @@
 package io.demo.basket.infrastructure.util.logging;
 
-import io.opentracing.Span;
-import io.opentracing.Tracer;
 import lombok.extern.slf4j.Slf4j;
 import net.logstash.logback.argument.StructuredArgument;
 import net.logstash.logback.marker.ObjectAppendingMarker;
@@ -34,43 +32,30 @@ public class HttpRequestLoggingInterceptor implements ClientHttpRequestIntercept
     @Value("${info.version-contract}")
     private String version;
 
-    private final Tracer tracer;
 
-    public HttpRequestLoggingInterceptor(Tracer tracer) {
-        this.tracer = tracer;
-    }
+
 
     @Override
     public ClientHttpResponse intercept(HttpRequest httpRequest, byte[] body, ClientHttpRequestExecution clientHttpRequestExecution) throws IOException {
 
-        Span serverSpan = tracer.activeSpan();
-        if (null == serverSpan) {
-            serverSpan = tracer.buildSpan("Async").start();
-        }
-        Span span = tracer.buildSpan(String.format("[GATEWAY] Intercept %s %s",
-                Objects.requireNonNull(httpRequest.getMethod()).toString(),
-                httpRequest.getURI().toString()))
-                .asChildOf(serverSpan.context())
-                .start();
 
-        logRequestStart(httpRequest, body, span);
+
+        logRequestStart(httpRequest, body);
         StopWatch stopWatch = new StopWatch();
         stopWatch.start();
 
         try {
             ClientHttpResponse response = clientHttpRequestExecution.execute(httpRequest, body);
             stopWatch.stop();
-            logRequestEnd(httpRequest, stopWatch, response, span);
+            logRequestEnd(httpRequest, stopWatch, response);
             return response;
         } catch (Exception e) {
             stopWatch.stop();
             throw e;
-        } finally {
-            span.finish();
         }
     }
 
-    private void logRequestEnd(HttpRequest httpRequest, StopWatch stopWatch, ClientHttpResponse response, Span span) {
+    private void logRequestEnd(HttpRequest httpRequest, StopWatch stopWatch, ClientHttpResponse response) {
         try {
             byte[] responseBody = FileCopyUtils.copyToByteArray(response.getBody());
             String responseBodyStr = new String(responseBody, StandardCharsets.UTF_8);
@@ -84,8 +69,7 @@ public class HttpRequestLoggingInterceptor implements ClientHttpRequestIntercept
                     value(VERSION_LABEL, version),
                     value(RESPONSE_BODY, responseBodyStr)};
             log.info(REQUEST_END, logsParam);
-            Stream.of(logsParam).map(ObjectAppendingMarker.class::cast)
-                    .forEach(arg -> span.setTag(arg.getFieldName(), arg.getFieldValue().toString()));
+
 
         } catch (Exception e) {
             log.error(e.getMessage(), MORE_INFO, log.getName());
@@ -93,7 +77,7 @@ public class HttpRequestLoggingInterceptor implements ClientHttpRequestIntercept
     }
 
 
-    private void logRequestStart(HttpRequest request, byte[] body, Span span) {
+    private void logRequestStart(HttpRequest request, byte[] body) {
         String bodyStr = new String(body, StandardCharsets.UTF_8);
         StructuredArgument[] logsParam = {
                 value(TracingConstant.TYPE, REQUEST),
@@ -102,8 +86,7 @@ public class HttpRequestLoggingInterceptor implements ClientHttpRequestIntercept
                 value(REQUEST_BODY, bodyStr),
                 value(VERSION_LABEL, version)
         };
-        Stream.of(logsParam).map(ObjectAppendingMarker.class::cast)
-                .forEach(arg -> span.setTag(arg.getFieldName(), arg.getFieldValue().toString()));
+
         log.info(REQUEST_START, logsParam);
     }
 

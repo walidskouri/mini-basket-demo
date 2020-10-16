@@ -13,11 +13,3 @@ spring:
       username: demo
       host: localhost
       port: 27018
-
-opentracing:
-  jaeger:
-    udp-sender:
-      host: localhost
-      port: 6831
-
-
