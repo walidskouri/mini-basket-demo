@@ -1,7 +1,8 @@
 package io.demo.basket.infrastructure.config.interceptor;
 
 import io.demo.basket.infrastructure.config.ConfigConstants;
-import io.jaegertracing.tracerresolver.internal.JaegerTracerResolver;
+import io.opentracing.Tracer;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.MDC;
 import org.springframework.stereotype.Component;
 
@@ -22,7 +23,11 @@ import java.util.UUID;
  * At the end of the request, it remove all MDC that was set during the run of the request
  */
 @Component
+@RequiredArgsConstructor
 public class MdcPropertiesWebFilter implements javax.servlet.Filter {
+
+
+    private final Tracer tracer;
 
     @Override
     public void init(FilterConfig filterConfig) {
@@ -38,7 +43,9 @@ public class MdcPropertiesWebFilter implements javax.servlet.Filter {
             correlationId = UUID.randomUUID().toString();
         }
 
-        JaegerTracerResolver.resolveTracer().activeSpan().setTag("correlationId", correlationId);
+        if (null != tracer.activeSpan()) {
+            tracer.activeSpan().setTag("correlationId", correlationId);
+        }
 
         try {
             MDC.put(ConfigConstants.REQUEST_ID, requestId);
