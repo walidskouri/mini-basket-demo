@@ -28,7 +28,7 @@
         <logstash.loback.encoder.version>6.3</logstash.loback.encoder.version>
         <junit-platform.version>1.6.0</junit-platform.version>
         <commons-collections4.version>4.4</commons-collections4.version>
-        <commons-io-version>2.6</commons-io-version>
+        <commons-io-version>2.7</commons-io-version>
         <joda-money-version>1.0.1</joda-money-version>
         <git-commit-id-plugin.version>4.0.0</git-commit-id-plugin.version>
         <maven.build.timestamp.format>yyyy-MM-dd HH:mm</maven.build.timestamp.format>
